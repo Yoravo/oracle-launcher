@@ -1,0 +1,35 @@
+name: Oracle Instance Retry
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  launch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: pip install oci requests
+
+      - name: Setup OCI Credentials
+        run: |
+          mkdir -p ~/.oci
+          echo "${{ secrets.OCI_CONFIG }}" > ~/.oci/config
+          echo "${{ secrets.OCI_KEY }}" > ~/.oci/key.pem
+          sed -i 's|key_file=.*|key_file=/home/runner/.oci/key.pem|g' ~/.oci/config
+
+      - name: Run Script
+        env:
+          SSH_PUBLIC_KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+          NOTIFICATION_EMAIL: ${{ secrets.NOTIFICATION_EMAIL }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+        run: python launch.py
