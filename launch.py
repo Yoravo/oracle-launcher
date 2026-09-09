@@ -70,6 +70,9 @@ except oci.exceptions.ServiceError as e:
     if "OutOfCapacity" in e.code or "capacity" in e.message.lower():
         print("Out of capacity. Coba lagi jadwal berikutnya.")
         sys.exit(0)
+    elif "TooManyRequests" in e.code or e.status == 429:
+        print("Rate limited Oracle (429). Tunggu jadwal berikutnya.")
+        sys.exit(0)
     else:
         print(f"Error: {e.code} - {e.message}")
         sys.exit(1)
