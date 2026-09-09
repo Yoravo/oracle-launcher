@@ -67,10 +67,12 @@ try:
         f"Instance {DISPLAY_NAME} berhasil dibuat di region Batam.\nStatus: PROVISIONING / RUNNING."
     )
 except oci.exceptions.ServiceError as e:
-    if "OutOfCapacity" in e.code or "capacity" in e.message.lower():
+    err_code = str(e.code) if e.code else ""
+    err_msg = str(e.message).lower() if e.message else ""
+    if "outofcapacity" in err_code.lower() or "capacity" in err_msg:
         print("Out of capacity. Coba lagi jadwal berikutnya.")
         sys.exit(0)
-    elif "TooManyRequests" in e.code or e.status == 429:
+    elif "toomanyrequests" in err_code.lower() or e.status == 429 or "too many requests" in err_msg:
         print("Rate limited Oracle (429). Tunggu jadwal berikutnya.")
         sys.exit(0)
     else:
