@@ -2,7 +2,8 @@ name: Oracle Instance Retry
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    # Jalan tiap 5 menit
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
