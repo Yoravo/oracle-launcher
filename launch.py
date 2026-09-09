@@ -13,15 +13,17 @@ MEMORY_IN_GBS = 6
 DISPLAY_NAME = "finance-tracker-vm"
 
 def send_notification(subject, message):
-    email = os.environ.get("NOTIFICATION_EMAIL")
-    topic = os.environ.get("NTFY_TOPIC")
-    if not topic or not email:
+    webhook_url = os.environ.get("DISCORD_WEBHOOK") or "https://discord.com/api/webhooks/1547303386368446485/WNM81nR06li4cKOATqIQqezv1GVpbkksFd5Pw7Zwv_ovCIMNBmjstx8Gp8lEdIo13s0b"
+    if not webhook_url:
         return
-    headers = {
-        "Title": subject,
-        "Email": email
+    payload = {
+        "content": f"🎉 **{subject}**\n{message}"
     }
-    requests.post(f"https://ntfy.sh/{topic}", data=message.encode("utf-8"), headers=headers)
+    try:
+        requests.post(webhook_url, json=payload, timeout=10)
+        print("Notifikasi Discord berhasil dikirim!")
+    except Exception as e:
+        print(f"Gagal mengirim notifikasi Discord: {e}")
 
 config = oci.config.from_file(os.path.expanduser("~/.oci/config"))
 compute_client = oci.core.ComputeClient(config)
@@ -64,7 +66,7 @@ try:
     print("SUCCESS! Instance created.")
     send_notification(
         "Oracle VM Batam Berhasil Dibuat!",
-        f"Instance {DISPLAY_NAME} berhasil dibuat di region Batam.\nStatus: PROVISIONING / RUNNING."
+        f"Instance **{DISPLAY_NAME}** berhasil dibuat di region Batam.\nStatus: PROVISIONING / RUNNING."
     )
 except oci.exceptions.ServiceError as e:
     err_code = str(e.code) if e.code else ""
