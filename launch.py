@@ -13,7 +13,7 @@ MEMORY_IN_GBS = 6
 DISPLAY_NAME = "finance-tracker-vm"
 
 def send_notification(subject, message):
-    webhook_url = os.environ.get("DISCORD_WEBHOOK") or "https://discord.com/api/webhooks/1547303386368446485/WNM81nR06li4cKOATqIQqezv1GVpbkksFd5Pw7Zwv_ovCIMNBmjstx8Gp8lEdIo13s0b"
+    webhook_url = os.environ.get("DISCORD_WEBHOOK")
     if not webhook_url:
         return
     payload = {
